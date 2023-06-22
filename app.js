@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const port = 3000
 const URL = require('./models/url')
+const generateShortURL = require('./generate_shorturl')
 if (process.env.NODE_ENV != 'production') {
   require('dotenv').config()
 }
