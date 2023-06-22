@@ -2,6 +2,7 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const port = 3000
+const URL = require('./models/url')
 if (process.env.NODE_ENV != 'production') {
   require('dotenv').config()
 }
@@ -13,6 +14,7 @@ const app = express()
 //啟用handlebars
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
+app.use(express.urlencoded({ extended:true }))
 
 
 //取得資料連線狀態
@@ -26,8 +28,14 @@ db.once('open', () =>{
   console.log('mongodb connected!')
 })
 
+//瀏覽首頁畫面
 app.get('/', (req, res) => {
   res.render('index')
+})
+
+app.post('/', (req, res) => {
+  const original_URL = req.body.original_url
+  console.log(original_URL)
 })
 
 app.listen(port, () => {
