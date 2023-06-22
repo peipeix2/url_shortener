@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   const originalURL = req.body.original_url.toLowerCase()
   const shortenedURL = generateShortURL()
-  return URL.create({ 
+  return Url.create({ 
     original_url: originalURL, 
     shortened_url: shortenedURL })
     .then((url) => res.render('showurl', { originalURL, shortenedURL }))
