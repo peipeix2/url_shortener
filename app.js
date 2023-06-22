@@ -2,7 +2,7 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 const mongoose = require('mongoose')
 const port = 3000
-const URL = require('./models/url')
+const Url = require('./models/url')
 const generateShortURL = require('./generate_shorturl')
 if (process.env.NODE_ENV != 'production') {
   require('dotenv').config()
@@ -34,13 +34,24 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
+//說明文字：：：：
 app.post('/', (req, res) => {
   const originalURL = req.body.original_url.toLowerCase()
   const shortenedURL = generateShortURL()
   return URL.create({ 
     original_url: originalURL, 
     shortened_url: shortenedURL })
-    .then((url) => res.render('showurl', { shortenedURL }))
+    .then((url) => res.render('showurl', { originalURL, shortenedURL }))
+    .catch(error => console.log(error))
+})
+
+//用短網址導回到原網站
+app.get('/:encodedUrl', (req, res) => {
+  const encodedUrl = req.params.encodedUrl
+  Url.findOne({ shortened_url: encodedUrl })
+    .then(url => {
+      res.redirect(url.original_url)
+    })
     .catch(error => console.log(error))
 })
 
