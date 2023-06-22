@@ -35,8 +35,13 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-  const original_URL = req.body.original_url
-  console.log(original_URL)
+  const originalURL = req.body.original_url.toLowerCase()
+  const shortenedURL = generateShortURL()
+  return URL.create({ 
+    original_url: originalURL, 
+    shortened_url: shortenedURL })
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
 })
 
 app.listen(port, () => {
