@@ -36,11 +36,11 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
   const originalURL = req.body.original_url.toLowerCase()
-  const shortenedURL = `http://localhost:${port}/` + generateShortURL()
+  const shortenedURL = generateShortURL()
   return URL.create({ 
     original_url: originalURL, 
     shortened_url: shortenedURL })
-    .then(() => res.redirect('/'))
+    .then((url) => res.render('showurl', { shortenedURL }))
     .catch(error => console.log(error))
 })
 
