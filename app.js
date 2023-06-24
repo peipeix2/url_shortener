@@ -36,7 +36,9 @@ app.get('/', (req, res) => {
 
 //產生不重複的短網址
 app.post('/', (req, res) => {
-  if (!req.body.original_url.trim()) return res.redirect('/')
+  if (!req.body.original_url.trim()) {
+    console.log(`Input can't be blank.`)
+    return res.redirect('/')}
   const originalURL = req.body.original_url.toLowerCase()
   Url.findOne({ original_url: originalURL })
     .then(data => {
