@@ -34,23 +34,39 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
-//說明文字：：：：
+//產生不重複的短網址
 app.post('/', (req, res) => {
+  if (!req.body.original_url.trim()) return res.redirect('/')
   const originalURL = req.body.original_url.toLowerCase()
-  const shortenedURL = generateShortURL()
-  return Url.create({ 
-    original_url: originalURL, 
-    shortened_url: shortenedURL })
-    .then((url) => res.render('showurl', { originalURL, shortenedURL }))
-    .catch(error => console.log(error))
+  Url.findOne({ original_url: originalURL })
+    .then(data => {
+      if (data) {
+        res.render('showurl', { originalURL, shortenedURL: data.shortened_url})
+      } else {
+        const shortenedURL = generateShortURL()
+        Url.create({
+          original_url: originalURL,
+          shortened_url: shortenedURL
+        })
+          .then(newUrl => res.render('showurl', { originalURL, shortenedURL }))
+          .catch(error => console.log(error))
+      }
+    })
+
 })
 
 //用短網址導回到原網站
 app.get('/:encodedUrl', (req, res) => {
   const encodedUrl = req.params.encodedUrl
   Url.findOne({ shortened_url: encodedUrl })
-    .then(url => {
-      res.redirect(url.original_url)
+    .then(data => {
+      if (data) {
+        res.redirect(data.original_url)
+      } else {
+        //發生錯誤時，顯示可能的錯誤，並將網站導回首頁
+        console.error(`Errors: 1. Couldn't find this url. OR 2. Original url is not valid.`)
+        res.redirect('/')
+      }
     })
     .catch(error => console.log(error))
 })
