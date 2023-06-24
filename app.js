@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const port = 3000
 const Url = require('./models/url')
 const generateShortURL = require('./generate_shorturl')
+const validateURL = require('./validate_url')
 if (process.env.NODE_ENV != 'production') {
   require('dotenv').config()
 }
@@ -37,11 +38,16 @@ app.get('/', (req, res) => {
 //產生不重複的短網址
 app.post('/', (req, res) => {
   if (!req.body.original_url.trim()) {
-    console.log(`Input can't be blank.`)
-    return res.redirect('/')}
+    console.log(`Input can't be blank.`) //若輸入空白，提示使用者，並導回首頁
+    return res.redirect('/')} 
+  if (!validateURL(req.body.original_url.trim())) {
+    console.log(`Input is not a valid url. Please try again.`) //若輸入非有效url，提示使用者，並導回首頁
+    return res.redirect('/')
+  }
   const originalURL = req.body.original_url.toLowerCase()
   Url.findOne({ original_url: originalURL })
     .then(data => {
+      //若輸入相同網址，產生相同縮址
       if (data) {
         res.render('showurl', { originalURL, shortenedURL: data.shortened_url})
       } else {
@@ -65,7 +71,7 @@ app.get('/:encodedUrl', (req, res) => {
       if (data) {
         res.redirect(data.original_url)
       } else {
-        //發生錯誤時，顯示可能的錯誤，並將網站導回首頁
+        //發生錯誤時（例如：1. 資料庫不存在這筆縮址; 2. 原網址為無效網址），顯示可能的錯誤，並將網站導回首頁
         console.error(`Errors: 1. Couldn't find this url. OR 2. Original url is not valid.`)
         res.redirect('/')
       }
