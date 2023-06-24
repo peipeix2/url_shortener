@@ -4,6 +4,18 @@
     alt="url_image">
 
   <h2>Success! Please use this link:</h2>
-  <p>localhost:3000/{{ shortenedURL }}</p>
+  <p id="shortened_url">localhost:3000/{{ shortenedURL }} </p>
+  <button class="btn btn-primary" onclick="copy()">Copy</button>
 
 </div>
+
+<script>
+  function copy() {
+      const copyText = document.getElementById("shortened_url").innerText
+      
+      // Copy the text inside the text field
+      navigator.clipboard.writeText(copyText)
+        .then(() => alert(`Copied: ${copyText}`))
+        .catch(error => console.log(error))
+    }
+</script>
