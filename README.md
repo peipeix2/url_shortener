@@ -25,6 +25,7 @@
 4. MongoDB
 5. Mongoose 5.9.7
 6. dotenv 16.3.1
+7. nodemon 6.14.11
 
 ## 開始使用
 
